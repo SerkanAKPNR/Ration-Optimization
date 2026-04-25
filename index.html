@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sığır Rasyon Programı</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1209; --surface: #1a1f10; --surface2: #232b15;
+    --border: #2e3a1a; --accent: #8fbe3c; --accent2: #c9e86a;
+    --text: #e8f0d0; --text2: #8a9870; --danger: #e05a3a; --warn: #e0a93a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Crimson Pro',serif; min-height:100vh; }
+
+  header { background:var(--surface); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; gap:12px; }
+  header h1 { font-size:1.5rem; font-weight:600; color:var(--accent2); letter-spacing:0.02em; }
+  .subtitle { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text2); margin-left:auto; }
+
+  .tabs { display:flex; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab { padding:12px 20px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text2); border-bottom:2px solid transparent; white-space:nowrap; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+  .tab:hover { color:var(--text); background:var(--surface2); }
+  .tab.active { color:var(--accent2); border-bottom-color:var(--accent); background:var(--surface2); }
+
+  .main { display:grid; grid-template-columns:340px 1fr; height:calc(100vh - 105px); }
+  .sidebar { background:var(--surface); border-right:1px solid var(--border); overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:14px; }
+  .content { overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:14px; }
+
+  .card { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:14px; }
+  .card-title { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+
+  label { font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--text2); display:block; margin-bottom:3px; }
+  input[type="number"] { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:7px 10px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.78rem; margin-bottom:8px; transition:border-color 0.2s; }
+  input[type="number"]:focus { outline:none; border-color:var(--accent); }
+
+  .btn { padding:9px 18px; border:none; border-radius:4px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.75rem; transition:all 0.2s; }
+  .btn-primary { background:var(--accent); color:var(--bg); font-weight:500; width:100%; }
+  .btn-primary:hover { background:var(--accent2); }
+  .btn-opt { background:linear-gradient(135deg,#1a3a6e,#2a5a9e); color:#a0d4ff; border:1px solid #2a5a9e; font-weight:500; width:100%; }
+  .btn-opt:hover { background:linear-gradient(135deg,#2a5a9e,#3a7abe); }
+  .btn-sm { padding:4px 10px; font-size:0.68rem; background:var(--surface); color:var(--text2); border:1px solid var(--border); cursor:pointer; border-radius:4px; font-family:'JetBrains Mono',monospace; }
+  .btn-sm:hover { color:var(--accent); border-color:var(--accent); }
+
+  .hm-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
+  .hm-table th { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--text2); text-align:left; padding:4px 4px 8px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  .hm-table td { padding:3px 4px; border-bottom:1px solid rgba(46,58,26,0.4); vertical-align:middle; }
+  .hm-table input[type="number"] { margin-bottom:0; padding:4px 6px; font-size:0.72rem; }
+  .hm-name { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text); white-space:nowrap; }
+
+  .result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+  .result-box { background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:10px; text-align:center; }
+  .result-box .val { font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:var(--accent2); font-weight:500; }
+  .result-box .lbl { font-size:0.7rem; color:var(--text2); margin-top:2px; font-family:'JetBrains Mono',monospace; }
+  .result-box.ok { border-color:var(--accent); }
+  .result-box.warn { border-color:var(--warn); }
+  .result-box.bad { border-color:var(--danger); }
+
+  .detail-row { display:grid; grid-template-columns:1fr 80px 70px 80px; gap:6px; padding:6px 0; border-bottom:1px solid var(--border); font-size:0.82rem; align-items:center; }
+  .detail-row.hdr { font-family:'JetBrains Mono',monospace; font-size:0.63rem; color:var(--text2); }
+
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.65rem; font-family:'JetBrains Mono',monospace; }
+  .badge-ok { background:rgba(143,190,60,0.15); color:var(--accent); border:1px solid var(--accent); }
+  .badge-warn { background:rgba(224,169,58,0.15); color:var(--warn); border:1px solid var(--warn); }
+  .badge-bad { background:rgba(224,90,58,0.15); color:var(--danger); border:1px solid var(--danger); }
+  .badge-opt { background:rgba(42,90,158,0.2); color:#a0d4ff; border:1px solid #2a5a9e; }
+
+  .cbar { height:5px; border-radius:3px; background:var(--border); margin-top:4px; overflow:hidden; }
+  .cfill { height:100%; border-radius:3px; transition:width 0.5s; }
+
+  .opt-banner { background:linear-gradient(135deg,rgba(26,58,110,0.3),rgba(42,90,158,0.2)); border:1px solid #2a5a9e; border-radius:6px; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:#a0d4ff; display:flex; align-items:center; gap:8px; }
+  .loading { text-align:center; padding:40px; font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--accent); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .empty-state { text-align:center; padding:40px 20px; color:var(--text2); font-family:'JetBrains Mono',monospace; font-size:0.8rem; }
+  .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
+  .tag { font-family:'JetBrains Mono',monospace; font-size:0.63rem; color:var(--text2); background:var(--bg); border:1px solid var(--border); padding:2px 6px; border-radius:3px; }
+  .section-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text2); margin-bottom:6px; }
+
+  .manuel-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:8px; }
+
+  @media(max-width:768px) {
+    .main { grid-template-columns:1fr; height:auto; }
+    .sidebar { border-right:none; border-bottom:1px solid var(--border); }
+    .result-grid { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <span>🐄</span>
+  <h1>Sığır Rasyon Programı</h1>
+  <div class="subtitle">v2.0 — Otomatik Optimizasyon</div>
+</header>
+<div class="tabs" id="tabBar"></div>
+<div class="main">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ─── VERİ ────────────────────────────────────────────────────────────────
+const GRUPLAR = [
+  { id:'sut', isim:'Süt İneği', icon:'🐄', aciklama:'Laktasyondaki inek',
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:20}, hp:{label:'Ham Protein (% KM)',val:16,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.5,isMin:true}, ndf:{label:'NDF (% KM)',val:32,isMax:true} },
+    ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:600},{label:'Süt Verimi (lt/gün)',key:'sut',val:25},{label:'Süt Yağı (%)',key:'yag',val:3.8}] },
+  { id:'kuru', isim:'Kuru İnek', icon:'🐄', aciklama:'Kuruda bekleyen inek',
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:11}, hp:{label:'Ham Protein (% KM)',val:12,isMin:true}, me:{label:'ME (MJ/kg KM)',val:9.5,isMin:true}, ndf:{label:'NDF (% KM)',val:40,isMax:true} },
+    ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:620},{label:'Kuru Süre (gün)',key:'gun',val:60}] },
+  { id:'duve', isim:'Düve', icon:'🐮', aciklama:'Genç dişi sığır',
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:8}, hp:{label:'Ham Protein (% KM)',val:14,isMin:true}, me:{label:'ME (MJ/kg KM)',val:10.0,isMin:true}, ndf:{label:'NDF (% KM)',val:36,isMax:true} },
+    ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:350},{label:'Günlük Artış (g/gün)',key:'gain',val:700}] },
+  { id:'buzagi', isim:'Buzağı', icon:'🍼', aciklama:'Büyüme dönemindeki buzağı',
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:3}, hp:{label:'Ham Protein (% KM)',val:18,isMin:true}, me:{label:'ME (MJ/kg KM)',val:12.0,isMin:true}, ndf:{label:'NDF (% KM)',val:25,isMax:true} },
+    ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:80},{label:'Yaş (hafta)',key:'yas',val:8},{label:'Günlük Artış (g/gün)',key:'gain',val:500}] },
+  { id:'besi', isim:'Besi', icon:'🥩', aciklama:'Besi sığırı',
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:9}, hp:{label:'Ham Protein (% KM)',val:13,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.0,isMin:true}, ndf:{label:'NDF (% KM)',val:30,isMax:true} },
+    ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:300},{label:'Hedef Ağırlık (kg)',key:'hedef',val:500},{label:'Günlük Artış (g/gün)',key:'gain',val:1200}] },
+];
+
+const HM0 = [
+  {isim:'Mısır Silajı',    hp:8.5, me:10.2,ndf:42,km:33,fiyat:800,  min:0,max:0},
+  {isim:'Yonca Kuru Otu',  hp:18.0,me:9.5, ndf:38,km:90,fiyat:4500, min:0,max:0},
+  {isim:'Mısır Danesi',    hp:9.0, me:14.0,ndf:10,km:88,fiyat:9500, min:0,max:0},
+  {isim:'Arpa Danesi',     hp:11.5,me:13.0,ndf:18,km:88,fiyat:8200, min:0,max:0},
+  {isim:'Soya Küspesi',    hp:44.0,me:13.2,ndf:12,km:89,fiyat:18000,min:0,max:0},
+  {isim:'Pamuk Tohumu K.', hp:40.0,me:11.5,ndf:30,km:90,fiyat:14000,min:0,max:0},
+  {isim:'Buğday Kepeği',   hp:16.5,me:11.0,ndf:35,km:88,fiyat:7000, min:0,max:0},
+  {isim:'Melas',           hp:5.0, me:12.5,ndf:0, km:72,fiyat:6000, min:0,max:0},
+  {isim:'Ayçiçek Küsp.',   hp:34.0,me:10.5,ndf:28,km:89,fiyat:11000,min:0,max:0},
+  {isim:'Kuru Pancar Pul.',hp:10.0,me:12.0,ndf:45,km:90,fiyat:8500, min:0,max:0},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────
+let S = {
+  aktif: 'sut',
+  hm: JSON.parse(JSON.stringify(HM0)),
+  iht: {}, ek: {}, miktar: {}
+};
+GRUPLAR.forEach(g => {
+  S.iht[g.id] = {}; Object.entries(g.ihtiyac).forEach(([k,v]) => S.iht[g.id][k] = v.val);
+  S.ek[g.id] = {};  g.ekBilgi.forEach(e => S.ek[g.id][e.key] = e.val);
+  S.miktar[g.id] = new Array(HM0.length).fill(0);
+});
+
+// ─── YARDIMCI ────────────────────────────────────────────────────────────
+function G() { return GRUPLAR.find(g => g.id === S.aktif); }
+
+function nutrients(miktarlar) {
+  let KM=0,HP=0,ME=0,NDF=0,MAL=0,TAZ=0;
+  miktarlar.forEach((t,i) => {
+    const h=S.hm[i], k=t*(h.km/100);
+    KM+=k; HP+=k*(h.hp/100); ME+=k*h.me; NDF+=k*(h.ndf/100);
+    MAL+=t*(h.fiyat/1000); TAZ+=t;
+  });
+  return { KM, HP, ME, NDF, MAL, TAZ,
+    hp_pct: KM>0?(HP/KM)*100:0,
+    me_val: KM>0?ME/KM:0,
+    ndf_pct:KM>0?(NDF/KM)*100:0 };
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────
+function render() { renderTabs(); renderSidebar(); renderContent(); }
+
+function renderTabs() {
+  document.getElementById('tabBar').innerHTML = GRUPLAR.map(g =>
+    `<div class="tab ${S.aktif===g.id?'active':''}" onclick="setGrup('${g.id}')">${g.icon} ${g.isim}</div>`
+  ).join('');
+}
+
+function setGrup(id) { S.aktif=id; render(); }
+
+function renderSidebar() {
+  const g=G();
+  document.getElementById('sidebar').innerHTML = `
+    <div class="card">
+      <div class="card-title">${g.icon} ${g.aciklama}</div>
+      ${g.ekBilgi.map(e=>`<label>${e.label}</label><input type="number" value="${S.ek[g.id][e.key]}" step="any" onchange="S.ek['${g.id}']['${e.key}']=+this.value">`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Besin İhtiyaçları</div>
+      <div class="section-label">Düzenleyebilirsiniz</div>
+      ${Object.entries(g.ihtiyac).map(([k,m])=>`
+        <label>${m.label} ${m.isMin?'(≥ bu değer)':m.isMax?'(≤ bu değer)':'(hedef)'}</label>
+        <input type="number" value="${S.iht[g.id][k]}" step="0.01" onchange="S.iht['${g.id}']['${k}']=+this.value">
+      `).join('')}
+    </div>
+    <div class="card" style="border-color:#2a5a9e;background:rgba(26,58,110,0.12)">
+      <div class="card-title" style="color:#a0d4ff">⚡ Otomatik Optimizasyon</div>
+      <div style="font-size:0.8rem;color:var(--text2);margin-bottom:10px;line-height:1.6">
+        Hammadde min/max sınırlarını ayarlayın, program <strong style="color:#a0d4ff">en ucuz</strong> uygun rasyonu otomatik bulsun.
+      </div>
+      <button class="btn btn-opt" onclick="otomatik()">🎯 Optimum Rasyonu Hesapla</button>
+    </div>
+    <button class="btn btn-primary" onclick="manuel()">⚙️ Manuel Hesapla</button>
+    <button class="btn btn-sm" onclick="sifirla()" style="width:100%;margin-top:6px">🔄 Miktarları Sıfırla</button>
+  `;
+}
+
+function renderContent() {
+  const g=G();
+  document.getElementById('content').innerHTML = `
+    <div class="card">
+      <div class="card-title"><span>🌾 Hammaddeler</span><button class="btn btn-sm" onclick="hmEkle()">+ Ekle</button></div>
+      <div style="overflow-x:auto">
+        <table class="hm-table">
+          <thead><tr>
+            <th>Hammadde</th><th>HP %</th><th>ME MJ</th><th>NDF %</th><th>KM %</th><th>₺/ton</th>
+            <th style="color:var(--warn)">Min kg</th><th style="color:var(--accent)">Max kg</th><th></th>
+          </tr></thead>
+          <tbody>
+            ${S.hm.map((h,i)=>`<tr>
+              <td><span class="hm-name">${h.isim}</span></td>
+              ${['hp','me','ndf','km','fiyat'].map(k=>`<td><input type="number" value="${h[k]}" step="${k==='fiyat'?100:0.1}" onchange="S.hm[${i}]['${k}']=+this.value"></td>`).join('')}
+              <td><input type="number" value="${h.min}" step="0.1" onchange="S.hm[${i}].min=+this.value" style="border-color:rgba(224,169,58,0.4)"></td>
+              <td><input type="number" value="${h.max}" step="0.1" onchange="S.hm[${i}].max=+this.value" style="border-color:rgba(143,190,60,0.4)"></td>
+              <td><button class="btn btn-sm" onclick="hmSil(${i})" style="color:var(--danger)">✕</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚖️ Manuel Miktar Girişi (kg/gün — taze ağırlık)</div>
+      <div class="manuel-grid">
+        ${S.hm.map((h,i)=>`
+          <div>
+            <label>${h.isim}</label>
+            <input type="number" id="m_${i}" value="${S.miktar[g.id][i]}" min="0" step="0.1" onchange="S.miktar['${g.id}'][${i}]=+this.value">
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div id="sonuclar">
+      <div class="card"><div class="empty-state">
+        <div class="icon">🐄</div>
+        <div>Manuel miktar girin → <strong>Manuel Hesapla</strong><br>ya da → <strong>🎯 Optimum Rasyonu Hesapla</strong></div>
+      </div></div>
+    </div>
+  `;
+}
+
+function sifirla() {
+  const g=G();
+  S.miktar[g.id]=new Array(S.hm.length).fill(0);
+  renderContent();
+}
+
+function hmSil(i) {
+  if(!confirm(`"${S.hm[i].isim}" silinsin mi?`)) return;
+  S.hm.splice(i,1);
+  Object.keys(S.miktar).forEach(gid=>S.miktar[gid].splice(i,1));
+  render();
+}
+
+function hmEkle() {
+  const isim=prompt('Hammadde adı:'); if(!isim) return;
+  S.hm.push({isim,hp:10,me:10,ndf:20,km:88,fiyat:5000,min:0,max:5});
+  Object.keys(S.miktar).forEach(gid=>S.miktar[gid].push(0));
+  render();
+}
+
+// ─── MANUEL HESAP ────────────────────────────────────────────────────────
+function manuel() {
+  const g=G(), oz=nutrients(S.miktar[g.id]);
+  if(oz.TAZ===0) { showEmpty('⚠️','Lütfen en az bir hammadde miktarı girin.'); return; }
+  showSonuc(oz, S.miktar[g.id], false);
+}
+
+// ─── OTOMATİK OPTİMİZASYON ───────────────────────────────────────────────
+// Gradient descent + penalty method
+// Amaç: Σ(fiyat_i * x_i) minimize et
+// Kısıtlar: KM ≈ hedef, HP% ≥ min, ME ≥ min, NDF% ≤ max, min_i ≤ x_i ≤ max_i
+function otomatik() {
+  document.getElementById('sonuclar').innerHTML =
+    '<div class="card"><div class="loading">🧮 Optimum rasyon hesaplanıyor...</div></div>';
+
+  setTimeout(() => {
+    const g=G(), iht=S.iht[g.id], hm=S.hm, n=hm.length;
+    const TARGET_KM = iht.km;
+    const MIN_HP    = iht.hp;
+    const MIN_ME    = iht.me;
+    const MAX_NDF   = iht.ndf;
+
+    // Max=0 → sınırsız (büyük sayı)
+    const maxArr = hm.map(h => h.max === 0 ? 9999 : h.max);
+    const minArr = hm.map(h => h.min);
+
+    // ── ADIM 1: Başlangıç — KM hedefini maliyet sırasına göre dağıt ──
+    // Önce ucuz hammaddelerden doldur (taze kg → KM kg dönüşüm ile)
+    function initByKM() {
+      let x = [...minArr];
+      let kmLeft = TARGET_KM - calcNT(x, hm).KM;
+      
+      // Ucuzdan pahalıya sırala
+      const order = hm.map((_,i)=>i).sort((a,b)=> hm[a].fiyat - hm[b].fiyat);
+      
+      for (const i of order) {
+        if (kmLeft <= 0) break;
+        const kmPerTaze = hm[i].km / 100;
+        const tazeNeeded = kmLeft / kmPerTaze;
+        const tazeAdd = Math.min(tazeNeeded, maxArr[i] - x[i]);
+        x[i] += tazeAdd;
+        kmLeft -= tazeAdd * kmPerTaze;
+      }
+      return x;
+    }
+
+    // ── ADIM 2: Protein eksikse en yüksek HP'li hammaddeyi artır ──
+    function fixHP(x) {
+      for (let iter = 0; iter < 500; iter++) {
+        const nt = calcNT(x, hm);
+        if (nt.hp_pct >= MIN_HP - 0.3) break;
+        
+        // En yüksek HP'li ve artırılabilir hammadde
+        let bestI = -1, bestHP = -1;
+        for (let i = 0; i < n; i++) {
+          if (x[i] < maxArr[i] && hm[i].hp > bestHP) { bestHP=hm[i].hp; bestI=i; }
+        }
+        if (bestI < 0) break;
+        
+        // Artırırken KM sabit tut: başka hammaddeyi azalt
+        const kmPerUnit = hm[bestI].km / 100;
+        const addTaze = Math.min(0.5, maxArr[bestI] - x[bestI]);
+        x[bestI] += addTaze;
+        
+        // KM dengesini koru: en ucuz ve en düşük HP'li hammaddeden çıkar
+        let kmToRemove = addTaze * kmPerUnit;
+        const removeOrder = hm.map((_,i)=>i)
+          .filter(i => i !== bestI && x[i] > minArr[i] && hm[i].hp < MIN_HP)
+          .sort((a,b) => hm[a].fiyat - hm[b].fiyat);
+        
+        for (const i of removeOrder) {
+          if (kmToRemove <= 0) break;
+          const kmPer = hm[i].km / 100;
+          const removable = Math.min((x[i]-minArr[i]), kmToRemove/kmPer);
+          x[i] -= removable;
+          kmToRemove -= removable * kmPer;
+        }
+      }
+      return x;
+    }
+
+    // ── ADIM 3: ME eksikse yüksek enerjili hammaddeleri artır ──
+    function fixME(x) {
+      for (let iter = 0; iter < 500; iter++) {
+        const nt = calcNT(x, hm);
+        if (nt.me_val >= MIN_ME - 0.2) break;
+        
+        let bestI = -1, bestME = -1;
+        for (let i = 0; i < n; i++) {
+          if (x[i] < maxArr[i] && hm[i].me > bestME) { bestME=hm[i].me; bestI=i; }
+        }
+        if (bestI < 0) break;
+        
+        const addTaze = Math.min(0.5, maxArr[bestI] - x[bestI]);
+        x[bestI] += addTaze;
+        const kmToRemove = addTaze * (hm[bestI].km/100);
+        
+        // En düşük ME'li ucuz hammadden çıkar
+        const removeOrder = hm.map((_,i)=>i)
+          .filter(i => i!==bestI && x[i]>minArr[i] && hm[i].me < MIN_ME)
+          .sort((a,b)=>hm[a].me - hm[b].me);
+        
+        let rem = kmToRemove;
+        for (const i of removeOrder) {
+          if (rem<=0) break;
+          const kmPer=hm[i].km/100;
+          const removable=Math.min((x[i]-minArr[i]),rem/kmPer);
+          x[i]-=removable; rem-=removable*kmPer;
+        }
+      }
+      return x;
+    }
+
+    // ── ADIM 4: NDF fazlaysa kaba yemi azalt ──
+    function fixNDF(x) {
+      for (let iter = 0; iter < 500; iter++) {
+        const nt = calcNT(x, hm);
+        if (nt.ndf_pct <= MAX_NDF + 0.5) break;
+        
+        // En yüksek NDF'li hammaddeyi azalt
+        let worstI = -1, worstNDF = -1;
+        for (let i=0;i<n;i++) {
+          if (x[i]>minArr[i] && hm[i].ndf>worstNDF) { worstNDF=hm[i].ndf; worstI=i; }
+        }
+        if (worstI<0) break;
+        
+        const removeTaze = Math.min(0.5, x[worstI]-minArr[worstI]);
+        x[worstI] -= removeTaze;
+        
+        // KM'yi koru: düşük NDF'li ekle
+        const kmToAdd = removeTaze*(hm[worstI].km/100);
+        const addOrder = hm.map((_,i)=>i)
+          .filter(i=>i!==worstI && x[i]<maxArr[i] && hm[i].ndf<MAX_NDF)
+          .sort((a,b)=>hm[a].fiyat-hm[b].fiyat);
+        
+        let rem=kmToAdd;
+        for (const i of addOrder) {
+          if(rem<=0) break;
+          const kmPer=hm[i].km/100;
+          const addable=Math.min((maxArr[i]-x[i]),rem/kmPer);
+          x[i]+=addable; rem-=addable*kmPer;
+        }
+      }
+      return x;
+    }
+
+    // ── ÇALIŞTIR ──
+    let x = initByKM();
+    x = fixHP(x);
+    x = fixME(x);
+    x = fixNDF(x);
+
+    // State'e yaz
+    const gObj = G();
+    S.miktar[gObj.id] = x;
+    x.forEach((v,i) => { const el=document.getElementById(`m_${i}`); if(el) el.value=v.toFixed(2); });
+
+    const oz = nutrients(x);
+    const yaklaşık = Math.abs(oz.KM-TARGET_KM)>TARGET_KM*0.08
+      || oz.hp_pct < MIN_HP-1.0
+      || oz.me_val < MIN_ME-0.5
+      || oz.ndf_pct > MAX_NDF+3;
+    showSonuc(oz, x, true, yaklaşık);
+  }, 60);
+}
+
+function calcNT(x,hm) {
+  let KM=0,HP=0,ME=0,NDF=0;
+  x.forEach((t,i)=>{ const k=t*(hm[i].km/100); KM+=k; HP+=k*(hm[i].hp/100); ME+=k*hm[i].me; NDF+=k*(hm[i].ndf/100); });
+  return { KM, hp_pct:KM>0?(HP/KM)*100:0, me_val:KM>0?ME/KM:0, ndf_pct:KM>0?(NDF/KM)*100:0 };
+}
+
+// ─── SONUÇ GÖSTERİM ──────────────────────────────────────────────────────
+function showEmpty(icon,msg) {
+  document.getElementById('sonuclar').innerHTML=`<div class="card"><div class="empty-state"><div class="icon">${icon}</div><div>${msg}</div></div></div>`;
+}
+
+function durum(val,hedef,tol) {
+  const f=Math.abs(val-hedef)/hedef*100;
+  return f<=tol?'ok':f<=tol*2.5?'warn':'bad';
+}
+
+function cbar(val,hedef) {
+  const pct=Math.min((val/(hedef*1.5))*100,100);
+  const c=Math.abs(val-hedef)/hedef<0.08?'var(--accent)':Math.abs(val-hedef)/hedef<0.2?'var(--warn)':'var(--danger)';
+  return `<div class="cbar"><div class="cfill" style="width:${pct}%;background:${c}"></div></div>`;
+}
+
+function showSonuc(oz,miktarlar,otomatik,yaklaşık=false) {
+  const g=G(), iht=S.iht[g.id], hm=S.hm;
+  const kmD=durum(oz.KM,iht.km,5), hpD=durum(oz.hp_pct,iht.hp,8);
+  const meD=durum(oz.me_val,iht.me,5), ndfD=durum(oz.ndf_pct,iht.ndf,10);
+
+  const satirlar=hm.map((h,i)=>({
+    isim:h.isim, taze:miktarlar[i],
+    km_kg:miktarlar[i]*(h.km/100),
+    maliyet:miktarlar[i]*(h.fiyat/1000),
+    pct:oz.TAZ>0?miktarlar[i]/oz.TAZ*100:0
+  })).filter(r=>r.taze>0.001);
+
+  document.getElementById('sonuclar').innerHTML = `
+    ${otomatik?`<div class="opt-banner">🚀 <span>Otomatik optimizasyon tamamlandı — optimum rasyon hesaplandı.</span></div>`:''}
+
+    <div class="card">
+      <div class="card-title">📊 Rasyon Özeti ${otomatik?'<span class="badge badge-opt">OPTİMUM</span>':''}</div>
+      <div class="result-grid">
+        <div class="result-box ${kmD}">
+          <div class="val">${oz.KM.toFixed(1)}</div>
+          <div class="lbl">KM kg/gün</div>
+          <div class="lbl">Hedef: ${iht.km}</div>
+          ${cbar(oz.KM,iht.km)}
+        </div>
+        <div class="result-box ${hpD}">
+          <div class="val">${oz.hp_pct.toFixed(1)}%</div>
+          <div class="lbl">Ham Protein</div>
+          <div class="lbl">Min: ${iht.hp}%</div>
+          ${cbar(oz.hp_pct,iht.hp)}
+        </div>
+        <div class="result-box ${meD}">
+          <div class="val">${oz.me_val.toFixed(2)}</div>
+          <div class="lbl">ME MJ/kg KM</div>
+          <div class="lbl">Min: ${iht.me}</div>
+          ${cbar(oz.me_val,iht.me)}
+        </div>
+        <div class="result-box ${ndfD}">
+          <div class="val">${oz.ndf_pct.toFixed(1)}%</div>
+          <div class="lbl">NDF</div>
+          <div class="lbl">Max: ${iht.ndf}%</div>
+          ${cbar(oz.ndf_pct,iht.ndf)}
+        </div>
+        <div class="result-box">
+          <div class="val">${oz.TAZ.toFixed(1)}</div>
+          <div class="lbl">Taze Ağırlık (kg)</div>
+        </div>
+        <div class="result-box" style="border-color:var(--warn)">
+          <div class="val" style="color:var(--warn)">${oz.MAL.toFixed(0)} ₺</div>
+          <div class="lbl">Günlük Maliyet</div>
+          <div class="lbl">${oz.KM>0?(oz.MAL/oz.KM).toFixed(0):0} ₺/kg KM</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Rasyon Detayı</div>
+      <div class="detail-row hdr"><span>Hammadde</span><span>Taze (kg)</span><span>Pay</span><span>Maliyet</span></div>
+      ${satirlar.map(r=>`
+        <div class="detail-row">
+          <span>${r.isim}</span>
+          <span style="font-family:'JetBrains Mono',monospace">${r.taze.toFixed(2)}</span>
+          <span style="font-family:'JetBrains Mono',monospace">%${r.pct.toFixed(1)}</span>
+          <span style="font-family:'JetBrains Mono',monospace">${r.maliyet.toFixed(0)} ₺</span>
+        </div>`).join('')}
+      <div class="detail-row" style="border-top:2px solid var(--border);margin-top:4px;font-weight:600">
+        <span style="color:var(--accent2)">TOPLAM</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">${oz.TAZ.toFixed(2)}</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">%100</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--warn)">${oz.MAL.toFixed(0)} ₺</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✅ Değerlendirme</div>
+      ${[
+        {lbl:'Kuru Madde', val:oz.KM.toFixed(1)+' kg', hedef:'Hedef: '+iht.km+' kg', d:kmD},
+        {lbl:'Ham Protein', val:oz.hp_pct.toFixed(1)+'%', hedef:'Min: '+iht.hp+'%', d:hpD},
+        {lbl:'ME', val:oz.me_val.toFixed(2)+' MJ', hedef:'Min: '+iht.me+' MJ', d:meD},
+        {lbl:'NDF', val:oz.ndf_pct.toFixed(1)+'%', hedef:'Max: '+iht.ndf+'%', d:ndfD},
+      ].map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:0.85rem">${r.lbl}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">${r.val}</span>
+            <span class="tag">${r.hedef}</span>
+            <span class="badge badge-${r.d}">${r.d==='ok'?'✓ İyi':r.d==='warn'?'⚠ Yakın':'✗ Uzak'}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
