@@ -103,38 +103,39 @@
 // ─── VERİ ────────────────────────────────────────────────────────────────
 const GRUPLAR = [
   { id:'sut', isim:'Süt İneği', icon:'🐄', aciklama:'Laktasyondaki inek',
-    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:20}, hp:{label:'Ham Protein (% KM)',val:16,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.5,isMin:true}, ndf:{label:'NDF (% KM)',val:32,isMax:true} },
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:20}, hp:{label:'Ham Protein (% KM)',val:16,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.5,isMin:true}, ndf:{label:'NDF (% KM)',val:32,isMax:true}, nis:{label:'Nişasta (% KM)',val:25,isMin:true} },
     ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:600},{label:'Süt Verimi (lt/gün)',key:'sut',val:25},{label:'Süt Yağı (%)',key:'yag',val:3.8}] },
   { id:'kuru', isim:'Kuru İnek', icon:'🐄', aciklama:'Kuruda bekleyen inek',
-    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:11}, hp:{label:'Ham Protein (% KM)',val:12,isMin:true}, me:{label:'ME (MJ/kg KM)',val:9.5,isMin:true}, ndf:{label:'NDF (% KM)',val:40,isMax:true} },
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:11}, hp:{label:'Ham Protein (% KM)',val:12,isMin:true}, me:{label:'ME (MJ/kg KM)',val:9.5,isMin:true}, ndf:{label:'NDF (% KM)',val:40,isMax:true}, nis:{label:'Nişasta (% KM)',val:18,isMin:true} },
     ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:620},{label:'Kuru Süre (gün)',key:'gun',val:60}] },
   { id:'duve', isim:'Düve', icon:'🐮', aciklama:'Genç dişi sığır',
-    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:8}, hp:{label:'Ham Protein (% KM)',val:14,isMin:true}, me:{label:'ME (MJ/kg KM)',val:10.0,isMin:true}, ndf:{label:'NDF (% KM)',val:36,isMax:true} },
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:8}, hp:{label:'Ham Protein (% KM)',val:14,isMin:true}, me:{label:'ME (MJ/kg KM)',val:10.0,isMin:true}, ndf:{label:'NDF (% KM)',val:36,isMax:true}, nis:{label:'Nişasta (% KM)',val:22,isMin:true} },
     ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:350},{label:'Günlük Artış (g/gün)',key:'gain',val:700}] },
   { id:'buzagi', isim:'Buzağı', icon:'🍼', aciklama:'Büyüme dönemindeki buzağı',
-    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:3}, hp:{label:'Ham Protein (% KM)',val:18,isMin:true}, me:{label:'ME (MJ/kg KM)',val:12.0,isMin:true}, ndf:{label:'NDF (% KM)',val:25,isMax:true} },
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:3}, hp:{label:'Ham Protein (% KM)',val:18,isMin:true}, me:{label:'ME (MJ/kg KM)',val:12.0,isMin:true}, ndf:{label:'NDF (% KM)',val:25,isMax:true}, nis:{label:'Nişasta (% KM)',val:28,isMin:true} },
     ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:80},{label:'Yaş (hafta)',key:'yas',val:8},{label:'Günlük Artış (g/gün)',key:'gain',val:500}] },
   { id:'besi', isim:'Besi', icon:'🥩', aciklama:'Besi sığırı',
-    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:9}, hp:{label:'Ham Protein (% KM)',val:13,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.0,isMin:true}, ndf:{label:'NDF (% KM)',val:30,isMax:true} },
+    ihtiyac:{ km:{label:'Kuru Madde (kg/gün)',val:9}, hp:{label:'Ham Protein (% KM)',val:13,isMin:true}, me:{label:'ME (MJ/kg KM)',val:11.0,isMin:true}, ndf:{label:'NDF (% KM)',val:30,isMax:true}, nis:{label:'Nişasta (% KM)',val:30,isMin:true} },
     ekBilgi:[{label:'Canlı Ağırlık (kg)',key:'ca',val:300},{label:'Hedef Ağırlık (kg)',key:'hedef',val:500},{label:'Günlük Artış (g/gün)',key:'gain',val:1200}] },
 ];
 
 const HM0 = [
-  {isim:'Mısır Silajı',    hp:8.5, me:10.2,ndf:42,km:33,fiyat:800,  min:0,max:0},
-  {isim:'Yonca Kuru Otu',  hp:18.0,me:9.5, ndf:38,km:90,fiyat:4500, min:0,max:0},
-  {isim:'Mısır Danesi',    hp:9.0, me:14.0,ndf:10,km:88,fiyat:9500, min:0,max:0},
-  {isim:'Arpa Danesi',     hp:11.5,me:13.0,ndf:18,km:88,fiyat:8200, min:0,max:0},
-  {isim:'Soya Küspesi',    hp:44.0,me:13.2,ndf:12,km:89,fiyat:18000,min:0,max:0},
-  {isim:'Pamuk Tohumu K.', hp:40.0,me:11.5,ndf:30,km:90,fiyat:14000,min:0,max:0},
-  {isim:'Buğday Kepeği',   hp:16.5,me:11.0,ndf:35,km:88,fiyat:7000, min:0,max:0},
-  {isim:'Melas',           hp:5.0, me:12.5,ndf:0, km:72,fiyat:6000, min:0,max:0},
-  {isim:'Ayçiçek Küsp.',   hp:34.0,me:10.5,ndf:28,km:89,fiyat:11000,min:0,max:0},
-  {isim:'Kuru Pancar Pul.',hp:10.0,me:12.0,ndf:45,km:90,fiyat:8500, min:0,max:0},
+  {isim:'Mısır Silajı',    hp:8.5, me:10.2,ndf:42,nis:3,  km:33,fiyat:800,  min:0,max:0},
+  {isim:'Yonca Kuru Otu',  hp:18.0,me:9.5, ndf:38,nis:2,  km:90,fiyat:4500, min:0,max:0},
+  {isim:'Mısır Danesi',    hp:9.0, me:14.0,ndf:10,nis:65, km:88,fiyat:9500, min:0,max:0},
+  {isim:'Arpa Danesi',     hp:11.5,me:13.0,ndf:18,nis:52, km:88,fiyat:8200, min:0,max:0},
+  {isim:'Soya Küspesi',    hp:44.0,me:13.2,ndf:12,nis:4,  km:89,fiyat:18000,min:0,max:0},
+  {isim:'Pamuk Tohumu K.', hp:40.0,me:11.5,ndf:30,nis:2,  km:90,fiyat:14000,min:0,max:0},
+  {isim:'Buğday Kepeği',   hp:16.5,me:11.0,ndf:35,nis:18, km:88,fiyat:7000, min:0,max:0},
+  {isim:'Melas',           hp:5.0, me:12.5,ndf:0, nis:48, km:72,fiyat:6000, min:0,max:0},
+  {isim:'Ayçiçek Küsp.',   hp:34.0,me:10.5,ndf:28,nis:3,  km:89,fiyat:11000,min:0,max:0},
+  {isim:'Kuru Pancar Pul.',hp:10.0,me:12.0,ndf:45,nis:1,  km:90,fiyat:8500, min:0,max:0},
 ];
 
 // ─── STATE ───────────────────────────────────────────────────────────────
 let S = {
   aktif: 'sut',
+  girismod: 'taze', // 'taze' | 'km'
   hm: JSON.parse(JSON.stringify(HM0)),
   iht: {}, ek: {}, miktar: {}
 };
@@ -148,16 +149,17 @@ GRUPLAR.forEach(g => {
 function G() { return GRUPLAR.find(g => g.id === S.aktif); }
 
 function nutrients(miktarlar) {
-  let KM=0,HP=0,ME=0,NDF=0,MAL=0,TAZ=0;
+  let KM=0,HP=0,ME=0,NDF=0,NIS=0,MAL=0,TAZ=0;
   miktarlar.forEach((t,i) => {
     const h=S.hm[i], k=t*(h.km/100);
-    KM+=k; HP+=k*(h.hp/100); ME+=k*h.me; NDF+=k*(h.ndf/100);
+    KM+=k; HP+=k*(h.hp/100); ME+=k*h.me; NDF+=k*(h.ndf/100); NIS+=k*((h.nis||0)/100);
     MAL+=t*(h.fiyat/1000); TAZ+=t;
   });
-  return { KM, HP, ME, NDF, MAL, TAZ,
-    hp_pct: KM>0?(HP/KM)*100:0,
-    me_val: KM>0?ME/KM:0,
-    ndf_pct:KM>0?(NDF/KM)*100:0 };
+  return { KM, HP, ME, NDF, NIS, MAL, TAZ,
+    hp_pct:  KM>0?(HP/KM)*100:0,
+    me_val:  KM>0?ME/KM:0,
+    ndf_pct: KM>0?(NDF/KM)*100:0,
+    nis_pct: KM>0?(NIS/KM)*100:0 };
 }
 
 // ─── RENDER ──────────────────────────────────────────────────────────────
@@ -206,13 +208,13 @@ function renderContent() {
       <div style="overflow-x:auto">
         <table class="hm-table">
           <thead><tr>
-            <th>Hammadde</th><th>HP %</th><th>ME MJ</th><th>NDF %</th><th>KM %</th><th>₺/ton</th>
+            <th>Hammadde</th><th>HP %</th><th>ME MJ</th><th>NDF %</th><th>Niş %</th><th>KM %</th><th>₺/ton</th>
             <th style="color:var(--warn)">Min kg</th><th style="color:var(--accent)">Max kg</th><th></th>
           </tr></thead>
           <tbody>
             ${S.hm.map((h,i)=>`<tr>
               <td><span class="hm-name">${h.isim}</span></td>
-              ${['hp','me','ndf','km','fiyat'].map(k=>`<td><input type="number" value="${h[k]}" step="${k==='fiyat'?100:0.1}" onchange="S.hm[${i}]['${k}']=+this.value"></td>`).join('')}
+              ${['hp','me','ndf','nis','km','fiyat'].map(k=>`<td><input type="number" value="${h[k]||0}" step="${k==='fiyat'?100:0.1}" onchange="S.hm[${i}]['${k}']=+this.value"></td>`).join('')}
               <td><input type="number" value="${h.min}" step="0.1" onchange="S.hm[${i}].min=+this.value" style="border-color:rgba(224,169,58,0.4)"></td>
               <td><input type="number" value="${h.max}" step="0.1" onchange="S.hm[${i}].max=+this.value" style="border-color:rgba(143,190,60,0.4)"></td>
               <td><button class="btn btn-sm" onclick="hmSil(${i})" style="color:var(--danger)">✕</button></td>
@@ -223,14 +225,27 @@ function renderContent() {
     </div>
 
     <div class="card">
-      <div class="card-title">⚖️ Manuel Miktar Girişi (kg/gün — taze ağırlık)</div>
+      <div class="card-title">
+        <span>⚖️ Manuel Miktar Girişi</span>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-sm ${S.girismod==='taze'?'active-mod':''}" onclick="setGirisMod('taze')" style="${S.girismod==='taze'?'color:var(--accent2);border-color:var(--accent)':''}">Taze kg</button>
+          <button class="btn btn-sm ${S.girismod==='km'?'active-mod':''}" onclick="setGirisMod('km')" style="${S.girismod==='km'?'color:var(--accent2);border-color:var(--accent)':''}">KM kg</button>
+        </div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text2);margin-bottom:10px">
+        ${S.girismod==='taze'?'Taze ağırlık giriyorsunuz — program KM'ye çeviriyor':'Kuru madde kg giriyorsunuz — program taze ağırlığa çeviriyor'}
+      </div>
       <div class="manuel-grid">
-        ${S.hm.map((h,i)=>`
-          <div>
-            <label>${h.isim}</label>
-            <input type="number" id="m_${i}" value="${S.miktar[g.id][i]}" min="0" step="0.1" onchange="S.miktar['${g.id}'][${i}]=+this.value">
-          </div>
-        `).join('')}
+        ${S.hm.map((h,i)=>{
+          const displayVal = S.girismod==='taze'
+            ? S.miktar[g.id][i]
+            : (S.miktar[g.id][i] * (h.km/100));
+          return \`<div>
+            <label>\${h.isim} <span style="color:var(--border)">(KM:\${h.km}%)</span></label>
+            <input type="number" id="m_\${i}" value="\${displayVal.toFixed(2)}" min="0" step="0.1"
+              onchange="setMiktarMod('\${g.id}',\${i},+this.value)">
+          </div>\`;
+        }).join('')}
       </div>
     </div>
 
@@ -494,6 +509,12 @@ function showSonuc(oz,miktarlar,otomatik,yaklaşık=false) {
           ${cbar(oz.ndf_pct,iht.ndf)}
         </div>
         <div class="result-box">
+          <div class="val">${oz.nis_pct.toFixed(1)}%</div>
+          <div class="lbl">Nişasta</div>
+          <div class="lbl">Min: ${iht.nis||0}%</div>
+          ${cbar(oz.nis_pct, iht.nis||25)}
+        </div>
+        <div class="result-box">
           <div class="val">${oz.TAZ.toFixed(1)}</div>
           <div class="lbl">Taze Ağırlık (kg)</div>
         </div>
@@ -507,17 +528,21 @@ function showSonuc(oz,miktarlar,otomatik,yaklaşık=false) {
 
     <div class="card">
       <div class="card-title">📋 Rasyon Detayı</div>
-      <div class="detail-row hdr"><span>Hammadde</span><span>Taze (kg)</span><span>Pay</span><span>Maliyet</span></div>
+      <div style="display:grid;grid-template-columns:1fr 75px 75px 65px 75px;gap:6px;padding:4px 0;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:var(--text2)">
+        <span>Hammadde</span><span>Taze(kg)</span><span>KM(kg)</span><span>Pay</span><span>Maliyet</span>
+      </div>
       ${satirlar.map(r=>`
-        <div class="detail-row">
+        <div style="display:grid;grid-template-columns:1fr 75px 75px 65px 75px;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem;align-items:center">
           <span>${r.isim}</span>
           <span style="font-family:'JetBrains Mono',monospace">${r.taze.toFixed(2)}</span>
+          <span style="font-family:'JetBrains Mono',monospace;color:var(--accent)">${r.km_kg.toFixed(2)}</span>
           <span style="font-family:'JetBrains Mono',monospace">%${r.pct.toFixed(1)}</span>
           <span style="font-family:'JetBrains Mono',monospace">${r.maliyet.toFixed(0)} ₺</span>
         </div>`).join('')}
-      <div class="detail-row" style="border-top:2px solid var(--border);margin-top:4px;font-weight:600">
+      <div style="display:grid;grid-template-columns:1fr 75px 75px 65px 75px;gap:6px;border-top:2px solid var(--border);margin-top:4px;padding-top:6px;font-weight:600">
         <span style="color:var(--accent2)">TOPLAM</span>
         <span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">${oz.TAZ.toFixed(2)}</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--accent)">${oz.KM.toFixed(2)}</span>
         <span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">%100</span>
         <span style="font-family:'JetBrains Mono',monospace;color:var(--warn)">${oz.MAL.toFixed(0)} ₺</span>
       </div>
@@ -530,6 +555,7 @@ function showSonuc(oz,miktarlar,otomatik,yaklaşık=false) {
         {lbl:'Ham Protein', val:oz.hp_pct.toFixed(1)+'%', hedef:'Min: '+iht.hp+'%', d:hpD},
         {lbl:'ME', val:oz.me_val.toFixed(2)+' MJ', hedef:'Min: '+iht.me+' MJ', d:meD},
         {lbl:'NDF', val:oz.ndf_pct.toFixed(1)+'%', hedef:'Max: '+iht.ndf+'%', d:ndfD},
+        {lbl:'Nişasta', val:oz.nis_pct.toFixed(1)+'%', hedef:'Min: '+(iht.nis||0)+'%', d:durum(oz.nis_pct,iht.nis||25,10)},
       ].map(r=>`
         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
           <span style="font-size:0.85rem">${r.lbl}</span>
