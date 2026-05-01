@@ -151,7 +151,7 @@ function render(){renderTabs();renderSubTabs();renderMain();}
 
 function renderTabs(){
   document.getElementById('tabBar').innerHTML=GRUPLAR.map(g=>
-    '<div class="tab '+(S.aktif===g.id?'active':'')+'" onclick="setGrup(''+g.id+'')">'+g.icon+' '+g.isim+'</div>'
+    `<div class="tab ${S.aktif===g.id?'active':''}" onclick="setGrup('${g.id}')">${g.icon} ${g.isim}</div>`
   ).join('');
 }
 
